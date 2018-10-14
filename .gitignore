@@ -26,3 +26,5 @@
 /.nb-gradle/
 
 keystore.p12
+server.crt
+server.key

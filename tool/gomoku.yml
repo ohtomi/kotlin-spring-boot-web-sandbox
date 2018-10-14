@@ -1,0 +1,23 @@
+- request:
+    route: /html
+  response:
+    cookies:
+    - name: session-id
+      value: 12345
+      path: /
+      domain: localhost
+      expires: 2018-01-14 22:47:17 JST
+      maxage: 0
+      secure: false
+      httponly: false
+    file: .{{ .Request.URL.Path }}
+- request:
+    route: /js
+  response:
+    file: .{{ .Request.URL.Path }}
+- request:
+    route: /
+  response:
+    status: 308
+    headers:
+      location: /html/index.html
