@@ -5,3 +5,14 @@ server:
     key-store-password: mypassword
     keyStoreType: PKCS12
     keyAlias: tomcat
+
+zuul:
+  ignoredServices: '*'
+  routes:
+    gomoku:
+      path: /proxy/**
+      url: https://localhost:8080/
+
+ribbon:
+  eureka:
+    enabled: false
