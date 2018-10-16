@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>com.github.ohtomi.demo</title>
+</head>
+<body>
+<h1>/index.html</h1>
+<h2>GET</h2>
+<ul>
+    <li><a href="/get/response.text">/get/response.text</a></li>
+    <li><a href="/get/response.json">/get/response.json</a></li>
+    <li><a href="/get/response.html">/get/response.html</a></li>
+</ul>
+<h2>POST</h2>
+<form action="/post/form-urlencoded" method="post" enctype="application/x-www-form-urlencoded">
+    <ul>
+        <li>application/x-www-form-urlencoded</li>
+        <ul>
+            <li><input type="text" name="name"></li>
+            <li><input type="number" name="age"></li>
+            <li>
+                <button type="submit">submit</button>
+            </li>
+        </ul>
+    </ul>
+</form>
+<form action="/post/multipart-form-data" method="post" enctype="multipart/form-data">
+    <ul>
+        <li>multipart/form-data</li>
+        <ul>
+            <li><input type="text" name="name"></li>
+            <li><input type="number" name="age"></li>
+            <li><input type="file" name="file"></li>
+            <li>
+                <button type="submit">submit</button>
+            </li>
+        </ul>
+    </ul>
+</form>
+</body>
+</html>

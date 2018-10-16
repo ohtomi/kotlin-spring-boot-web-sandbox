@@ -5,10 +5,8 @@ bootRun:
 	gradle bootRun
 
 genkeypair:
-	keytool -genkeypair -alias tomcat \
-	  -storetype PKCS12 -keyalg RSA -keysize 2048 \
-	  -keystore keystore.p12 -storepass mypassword \
-	  -validity 3650
+	keytool -genkeypair -alias tomcat -validity 3650 -storetype PKCS12 -keyalg RSA -keysize 2048 \
+	  -keystore keystore.p12 -storepass mypassword
 
 gomokuRun:
 	@cd tool ; \
@@ -18,15 +16,17 @@ certificate:
 	@cd tool ; \
 	@rm ./server.key ./server.crt ; \
 	openssl genrsa -out ./server.key 2048 ; \
-	openssl req -new -x509 -sha256 \
-	  -key ./server.key -out ./server.crt -days 3650
+	openssl req -new -x509 -sha256 -days 3650 -key ./server.key -out ./server.crt ; \
+	sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./server.crt
 
-importca:
-	keytool -import -alias gomoku \
-	  -trustcacerts -file ../gomoku/cert/server.crt \
-	  -cacerts
+importcert:
+	@cd tool ; \
+	keytool -importcert -alias gomoku -storepass changeit -cacerts -trustcacerts -file ./server.crt
 
-deleteca:
-	keytool -delete -alias gomoku -cacerts
+deletecert:
+	keytool -delete -alias gomoku -storepass changeit -cacerts
 
-.PHONY: bootRun genkeypair importca deleteca
+listcert:
+	keytool -list -alias gomoku -storepass changeit -cacerts
+
+.PHONY: bootRun genkeypair gomokuRun certificate importcert deletecert listcert
