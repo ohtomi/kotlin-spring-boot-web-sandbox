@@ -7,9 +7,11 @@ import org.springframework.cloud.netflix.zuul.filters.post.LocationRewriteFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import javax.servlet.http.HttpServletResponse
 
 @EnableZuulProxy
 @RestController
@@ -74,13 +76,35 @@ class DemoApplication {
             produces = [MediaType.APPLICATION_JSON_UTF8_VALUE])
     fun postMultipartFormData(request: DemoMultipart): Map<String, Any> {
 
-        val filename = if (request.file?.originalFilename != null) request.file!!.originalFilename!! else "<null>"
-        return mapOf("application" to "kotlin-spring-boot-web-sandbox", "filename" to filename)
+        return mapOf("name" to request.name, "age" to request.age, "application" to "kotlin-spring-boot-web-sandbox")
     }
 
-    data class DemoMultipart(var name: String, var age: Int, var file: MultipartFile?)
+    data class DemoMultipart(var name: String, var age: Int)
 
     // handle FILE uploading, FILE downloading ---------------------------------
+
+    @PostMapping(value = ["/file/upload"],
+            consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
+            produces = [MediaType.APPLICATION_JSON_UTF8_VALUE])
+    fun uploadFile(request: DemoUpload): Map<String, Any> {
+
+        val filename = request.file?.originalFilename ?: "<missing>"
+        val contentType = request.file?.contentType ?: "<missing>"
+        val size = request.file?.size ?: -1
+        return mapOf("filename" to filename, "contentType" to contentType, "size" to size)
+    }
+
+    data class DemoUpload(var file: MultipartFile?)
+
+    @GetMapping(value = ["/file/download"], produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
+    fun downloadFile(response: HttpServletResponse): Resource {
+
+        val filename = "app.yml"
+        response.addHeader(
+                HttpHeaders.CONTENT_DISPOSITION,
+                """attachement;filename="$filename"""")
+        return ClassPathResource("application.yml")
+    }
 
     // beans -------------------------------------------------------------------
 

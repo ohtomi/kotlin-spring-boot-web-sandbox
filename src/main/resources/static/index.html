@@ -5,32 +5,85 @@
 </head>
 <body>
 <h1>/index.html</h1>
+
 <h2>GET</h2>
 <ul>
     <li><a href="/get/response.text">/get/response.text</a></li>
     <li><a href="/get/response.json">/get/response.json</a></li>
     <li><a href="/get/response.html">/get/response.html</a></li>
 </ul>
+
 <h2>POST</h2>
-<form action="/post/form-urlencoded" method="post" enctype="application/x-www-form-urlencoded">
+<form action="/post/json" method="post" id="postJsonForm" accept-charset="utf-8">
+    <ul>
+        <li>application/json</li>
+        <ul>
+            <li><input type="text" name="name" value="ほげ"></li>
+            <li><input type="number" name="age" value="17"></li>
+            <li>
+                <button type="submit">submit</button>
+            </li>
+        </ul>
+    </ul>
+    <script>
+        const form = document.querySelector('#postJsonForm')
+        const button = form.querySelector('button')
+        button.addEventListener('click', evt => {
+            evt.preventDefault()
+            const action = form.getAttribute('action')
+            const method = form.getAttribute('method')
+            const acceptCharset = form.getAttribute('accept-charset')
+            const headers = {'Content-Type': `application/json;charset=${acceptCharset}`}
+            const name = form.querySelector('input[name="name"]').value
+            const age = form.querySelector('input[name="age"]').value
+            const body = JSON.stringify({name, age})
+            fetch(action, {method, headers, body})
+                .then(res => res.text())
+                .then(res => console.log(res))
+        })
+    </script>
+</form>
+<form action="/post/form-urlencoded" method="post" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <ul>
         <li>application/x-www-form-urlencoded</li>
         <ul>
-            <li><input type="text" name="name"></li>
-            <li><input type="number" name="age"></li>
+            <li><input type="text" name="name" value="ほげ"></li>
+            <li><input type="number" name="age" value="17"></li>
             <li>
                 <button type="submit">submit</button>
             </li>
         </ul>
     </ul>
 </form>
-<form action="/post/multipart-form-data" method="post" enctype="multipart/form-data">
+<form action="/post/multipart-form-data" method="post" enctype="multipart/form-data" accept-charset="utf-8">
     <ul>
         <li>multipart/form-data</li>
         <ul>
-            <li><input type="text" name="name"></li>
-            <li><input type="number" name="age"></li>
+            <li><input type="text" name="name" value="ほげ"></li>
+            <li><input type="number" name="age" value="17"></li>
+            <li>
+                <button type="submit">submit</button>
+            </li>
+        </ul>
+    </ul>
+</form>
+
+<h2>FILE</h2>
+<form action="/file/upload" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+    <ul>
+        <li>FILE uploading</li>
+        <ul>
             <li><input type="file" name="file"></li>
+            <li>
+                <button type="submit">submit</button>
+            </li>
+        </ul>
+    </ul>
+</form>
+<form action="/file/download" method="get" enctype="multipart/form-data" accept-charset="utf-8">
+    <ul>
+        <li>FILE downloading</li>
+        <ul>
             <li>
                 <button type="submit">submit</button>
             </li>
