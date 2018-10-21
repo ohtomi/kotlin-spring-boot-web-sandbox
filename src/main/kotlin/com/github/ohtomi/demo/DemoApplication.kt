@@ -109,10 +109,7 @@ class DemoApplication {
     // beans -------------------------------------------------------------------
 
     @Bean
-    fun newLocationRewriteFilter(): LocationRewriteFilter {
-
-        return LocationRewriteFilter()
-    }
+    fun newLocationRewriteFilter(): LocationRewriteFilter = LocationRewriteFilter()
 }
 
 fun main(args: Array<String>) {
