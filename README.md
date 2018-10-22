@@ -2,6 +2,8 @@
 
 ## how to run
 
+### `Gradle`
+
 ```console
 $ make genkeypair
 ...
@@ -12,14 +14,31 @@ $ make bootRun
 $ open https://localhost:8443
 ```
 
+### `Docker`
+
+```console
+$ make genkeypair
+...
+
+$ make jibDockerBuild
+...
+
+$ make jibRun
+...
+
+$ open https://localhost:8443
+```
+
 ## Prerequisite
 
 - `Java`
 - `Gradle`
+- `Docker` (optional for `Jib`)
 
 ## See Also
 
 - [Spring Initializr](https://start.spring.io/#!language=kotlin)
+- [Jib](https://github.com/GoogleContainerTools/jib)
 
 ## Contributing
 

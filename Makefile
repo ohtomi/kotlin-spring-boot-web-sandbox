@@ -29,4 +29,16 @@ deletecert:
 listcert:
 	keytool -list -alias gomoku -storepass changeit -cacerts
 
-.PHONY: bootRun genkeypair gomokuRun certificate importcert deletecert listcert
+jibDockerBuild:
+	@mkdir -p ./src/main/jib
+	@cp keystore.p12 ./src/main/jib/
+	gradle jibDockerBuild
+	@rm -fr ./src/main/jib/
+
+jibRun:
+	docker run --rm -d -p 8443:8443 -p 8080:8080 --name sandbox kotlin-spring-boot-web-sandbox:0.0.1-SNAPSHOT
+
+jibStop:
+	docker stop sandbox
+
+.PHONY: bootRun genkeypair gomokuRun certificate importcert deletecert listcert jibDockerBuild jibRun jibStop

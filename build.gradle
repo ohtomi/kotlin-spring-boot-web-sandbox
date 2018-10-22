@@ -13,6 +13,9 @@ buildscript {
 	}
 }
 
+plugins {
+	id("com.google.cloud.tools.jib") version "0.9.13"
+}
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-spring'
 apply plugin: 'eclipse'
@@ -54,5 +57,11 @@ dependencies {
 dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:Finchley.SR1"
+	}
+}
+
+jib {
+	container {
+		ports [8443, 8080]
 	}
 }
