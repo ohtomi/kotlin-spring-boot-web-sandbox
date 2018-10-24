@@ -102,7 +102,7 @@ class DemoApplicationTests {
                 form.entries.map { "${it.key}=${it.value}" }.joinToString("&"),
                 HttpHeaders().apply { set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE) }
         )
-        val response = template.postForEntity("${template.rootUri}/post//form-urlencoded", request, Map::class.java)
+        val response = template.postForEntity("${template.rootUri}/post/form-urlencoded", request, Map::class.java)
 
         val fixture = mapOf(
                 "status" to 200,
@@ -120,9 +120,9 @@ class DemoApplicationTests {
     @Test
     fun testPostMultipartFormData() {
 
-        val form = LinkedMultiValueMap(mapOf("name" to listOf("ふが"), "age" to listOf(19)))
+        val form = mapOf("name" to listOf("ふが"), "age" to listOf(19))
         val request = HttpEntity(
-                form,
+                LinkedMultiValueMap(form),
                 HttpHeaders().apply { set(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_FORM_DATA_VALUE) }
         )
         val response = template.postForEntity("${template.rootUri}/post/multipart-form-data", request, Map::class.java)
@@ -145,9 +145,9 @@ class DemoApplicationTests {
     fun testUploadFile() {
 
         val resource = ClassPathResource("application.yml")
-        val form = LinkedMultiValueMap(mapOf("file" to listOf(resource)))
+        val form = mapOf("file" to listOf(resource))
         val request = HttpEntity(
-                form,
+                LinkedMultiValueMap(form),
                 HttpHeaders().apply { set(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_FORM_DATA_VALUE) }
         )
         val response = template.postForEntity("${template.rootUri}/file/upload", request, Map::class.java)
@@ -169,13 +169,14 @@ class DemoApplicationTests {
     @Test
     fun testDownloadFile() {
 
+        val resource = ClassPathResource("application.yml")
         val extractor = DemoDownloadResponseExtractor()
         val response = template.execute("${template.rootUri}/file/download", HttpMethod.GET, null, extractor)
 
         val fixture = mapOf(
                 "status" to 200,
                 "contentType" to MediaType.APPLICATION_OCTET_STREAM,
-                "body" to loadFromFile(ClassPathResource("application.yml"))
+                "body" to loadFromFile(resource)
         )
         Assert.assertEquals(fixture["status"], response.statusCodeValue)
         Assert.assertEquals(fixture["contentType"], response.headers.contentType)
@@ -190,9 +191,9 @@ class DemoApplicationTests {
                         .headers(response.headers)
                         .body(response.body.reader(StandardCharsets.UTF_8).readText())
     }
-
-    // helper ------------------------------------------------------------------
-
-    fun loadFromFile(resource: ClassPathResource, charset: Charset = StandardCharsets.UTF_8): String =
-            String(Files.readAllBytes(resource.file.toPath()), charset)
 }
+
+// helper ------------------------------------------------------------------
+
+fun loadFromFile(resource: ClassPathResource, charset: Charset = StandardCharsets.UTF_8): String =
+        String(Files.readAllBytes(resource.file.toPath()), charset)
