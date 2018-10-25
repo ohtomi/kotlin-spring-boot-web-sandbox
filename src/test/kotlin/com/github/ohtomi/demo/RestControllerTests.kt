@@ -34,11 +34,9 @@ class RestControllerTests {
     @Test
     fun testGetText() {
 
-        mockMvc.perform {
-            get("/get/response.text").run {
-                buildRequest(it)
-            }
-        }
+        val request = get("/get/response.text")
+
+        mockMvc.perform(request)
                 .andExpect(status().isOk)
                 .andExpect(content().contentType(MediaType(MediaType.TEXT_PLAIN, StandardCharsets.UTF_8)))
                 .andExpect(content().string("/get/response.text\n----\nkotlin-spring-boot-web-sandbox"))
@@ -47,11 +45,9 @@ class RestControllerTests {
     @Test
     fun getGetJson() {
 
-        mockMvc.perform {
-            get("/get/response.json").run {
-                buildRequest(it)
-            }
-        }
+        val request = get("/get/response.json")
+
+        mockMvc.perform(request)
                 .andExpect(status().isOk)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content().json(objectMapper.writeValueAsString(mapOf(
@@ -64,11 +60,9 @@ class RestControllerTests {
     @Test
     fun testGetHtml() {
 
-        mockMvc.perform {
-            get("/get/response.html").run {
-                buildRequest(it)
-            }
-        }
+        val request = get("/get/response.html")
+
+        mockMvc.perform(request)
                 .andExpect(status().isOk)
                 .andExpect(content().contentType(MediaType.TEXT_HTML))
                 .andExpect(content().string(loadFromFile(ClassPathResource("static/get/response.html"))))
@@ -79,19 +73,17 @@ class RestControllerTests {
     @Test
     fun testPostJson() {
 
-        val request = mapOf("name" to "ふが", "age" to 19)
-
-        mockMvc.perform {
-            post("/post/json").run {
-                contentType(MediaType.APPLICATION_JSON_UTF8)
-                content(objectMapper.writeValueAsBytes(request))
-                buildRequest(it)
-            }
+        val form = mapOf("name" to "ふが", "age" to 19)
+        val request = post("/post/json").apply {
+            contentType(MediaType.APPLICATION_JSON_UTF8)
+            content(objectMapper.writeValueAsBytes(form))
         }
+
+        mockMvc.perform(request)
                 .andExpect(status().isOk)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content().json(objectMapper.writeValueAsString(
-                        request.toMutableMap().apply { put("application", "kotlin-spring-boot-web-sandbox") }
+                        form.toMutableMap().apply { put("application", "kotlin-spring-boot-web-sandbox") }
                 )))
     }
 
@@ -99,21 +91,17 @@ class RestControllerTests {
     fun testPostFormUrlEncoded() {
 
         val form = mapOf("name" to "ふが", "age" to 19)
-        val request = UrlEncodedFormEntity(
-                form.entries.map { BasicNameValuePair(it.key, it.value.toString()) }, StandardCharsets.UTF_8)
-
-        mockMvc.perform {
-            post("/post/form-urlencoded").run {
-                contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                content(EntityUtils.toString(request))
-                buildRequest(it)
-            }
+        val request = post("/post/form-urlencoded").apply {
+            contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            content(EntityUtils.toString(UrlEncodedFormEntity(
+                    form.entries.map { BasicNameValuePair(it.key, it.value.toString()) }, StandardCharsets.UTF_8)))
         }
+
+        mockMvc.perform(request)
                 .andExpect(status().isOk)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content().json(objectMapper.writeValueAsString(
-                        form
-                                .mapValues { it.value.toString() }.toMutableMap() // 19 => "19"
+                        form.mapValues { it.value.toString() }.toMutableMap() // 19 => "19"
                                 .apply { put("application", "kotlin-spring-boot-web-sandbox") }
                 )))
     }
@@ -122,20 +110,16 @@ class RestControllerTests {
     fun testPostMultipartFormData() {
 
         val form = mapOf("name" to listOf("ふが"), "age" to listOf(19))
-        val request = LinkedMultiValueMap(
-                form.mapValues { it.value.map { it.toString() } })
-
-        mockMvc.perform {
-            multipart("/post/multipart-form-data").run {
-                params(request)
-                buildRequest(it)
-            }
+        val request = multipart("/post/multipart-form-data").apply {
+            params(LinkedMultiValueMap(
+                    form.mapValues { it.value.map { it.toString() } }))
         }
+
+        mockMvc.perform(request)
                 .andExpect(status().isOk)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content().json(objectMapper.writeValueAsString(
-                        form
-                                .mapValues { it.value.first() }.toMutableMap()
+                        form.mapValues { it.value.first() }.toMutableMap()
                                 .apply { put("application", "kotlin-spring-boot-web-sandbox") }
                 )))
     }
@@ -146,14 +130,12 @@ class RestControllerTests {
     fun testUploadFile() {
 
         val resource = ClassPathResource("application.yml")
-        val form = listOf(MockMultipartFile("file", resource.filename, MediaType.APPLICATION_OCTET_STREAM_VALUE, resource.inputStream))
-
-        mockMvc.perform {
-            multipart("/file/upload").run {
-                form.forEach { f -> file(f) }
-                buildRequest(it)
-            }
+        val files = listOf(MockMultipartFile("file", resource.filename, MediaType.APPLICATION_OCTET_STREAM_VALUE, resource.inputStream))
+        val request = multipart("/file/upload").apply {
+            files.forEach { file(it) }
         }
+
+        mockMvc.perform(request)
                 .andExpect(status().isOk)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content().json(objectMapper.writeValueAsString(
@@ -168,12 +150,9 @@ class RestControllerTests {
     fun testDownloadFile() {
 
         val resource = ClassPathResource("application.yml")
+        val request = get("/file/download")
 
-        mockMvc.perform {
-            get("/file/download").run {
-                buildRequest(it)
-            }
-        }
+        mockMvc.perform(request)
                 .andExpect(status().isOk)
                 .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
                 .andExpect(content().string(loadFromFile(resource)))

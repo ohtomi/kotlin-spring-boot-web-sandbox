@@ -81,13 +81,13 @@ class DemoApplicationTests {
     @Test
     fun testPostJson() {
 
-        val request = mapOf("name" to "ふが", "age" to 19)
-        val response = template.postForEntity("${template.rootUri}/post/json", request, Map::class.java)
+        val form = mapOf("name" to "ふが", "age" to 19)
+        val response = template.postForEntity("${template.rootUri}/post/json", form, Map::class.java)
 
         val fixture = mapOf(
                 "status" to 200,
                 "contentType" to MediaType.APPLICATION_JSON_UTF8,
-                "body" to request.toMutableMap().apply { put("application", "kotlin-spring-boot-web-sandbox") }
+                "body" to form.toMutableMap().apply { put("application", "kotlin-spring-boot-web-sandbox") }
         )
         Assert.assertEquals(fixture["status"], response.statusCodeValue)
         Assert.assertEquals(fixture["contentType"], response.headers.contentType)
