@@ -5,9 +5,6 @@
 ### `Gradle`
 
 ```console
-$ make genkeypair
-...
-
 $ make bootRun
 ...
 
@@ -17,9 +14,6 @@ $ open https://localhost:8443
 ### `Docker`
 
 ```console
-$ make genkeypair
-...
-
 $ make jibDockerBuild
 ...
 
@@ -39,6 +33,7 @@ $ open https://localhost:8443
 
 - [Spring Initializr](https://start.spring.io/#!language=kotlin)
 - [Jib](https://github.com/GoogleContainerTools/jib)
+- [gomoku](https://github.com/ohtomi/gomoku)
 
 ## Contributing
 
